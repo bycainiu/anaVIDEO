@@ -1,0 +1,5 @@
+{
+  "name": "Gemini Creative Suite",
+  "description": "An application featuring an AI-powered chatbot for conversations and an advanced image generator to bring your ideas to life, all powered by Google's Gemini models.",
+  "requestFramePermissions": []
+}

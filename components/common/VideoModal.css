@@ -1,0 +1,179 @@
+/* Video.js 自定义样式 */
+
+/* 播放器主题色调整 */
+.video-js {
+  font-family: inherit;
+}
+
+/* 控制栏样式 */
+.video-js .vjs-control-bar {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.4));
+  backdrop-filter: blur(10px);
+}
+
+/* 进度条样式 - 保留video.js原生进度条位置 */
+.video-js .vjs-progress-control {
+  position: relative;
+  height: 8px;
+}
+
+.video-js .vjs-progress-holder {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.video-js .vjs-play-progress {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 4px;
+}
+
+.video-js .vjs-load-progress {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+}
+
+/* 播放进度条的指示点 */
+.video-js .vjs-play-progress::before {
+  content: '';
+  position: absolute;
+  right: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 14px;
+  height: 14px;
+  background: #3b82f6;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.6);
+}
+
+/* 悬停时进度条放大 */
+.video-js .vjs-progress-control:hover .vjs-progress-holder {
+  height: 10px;
+}
+
+.video-js .vjs-progress-control:hover .vjs-play-progress::before {
+  width: 16px;
+  height: 16px;
+  right: -7px;
+}
+
+/* 大播放按钮 */
+.video-js .vjs-big-play-button {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: rgba(59, 130, 246, 0.9);
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  font-size: 48px;
+  line-height: 74px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  transition: all 0.3s ease;
+}
+
+.video-js .vjs-big-play-button:hover {
+  background: rgba(37, 99, 235, 1);
+  transform: translate(-50%, -50%) scale(1.1);
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+}
+
+/* 时间显示 */
+.video-js .vjs-time-control {
+  font-size: 13px;
+  line-height: 30px;
+  font-weight: 500;
+  padding: 0 8px;
+}
+
+.video-js .vjs-current-time,
+.video-js .vjs-duration {
+  display: block;
+}
+
+/* 音量控制 */
+.video-js .vjs-volume-panel {
+  transition: width 0.3s;
+}
+
+.video-js .vjs-volume-panel:hover {
+  width: auto;
+}
+
+.video-js .vjs-volume-bar {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+}
+
+.video-js .vjs-volume-level {
+  background: linear-gradient(90deg, #3b82f6, #2563eb);
+  border-radius: 2px;
+}
+
+/* 全屏按钮 */
+.video-js .vjs-fullscreen-control {
+  font-size: 20px;
+}
+
+/* 按钮悬停效果 */
+.video-js .vjs-control:hover {
+  color: #3b82f6;
+  text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+}
+
+/* 时间提示框 */
+.video-js .vjs-time-tooltip,
+.video-js .vjs-mouse-display .vjs-time-tooltip {
+  background: rgba(0, 0, 0, 0.9);
+  border: 1px solid rgba(59, 130, 246, 0.5);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* 加载动画 */
+.video-js .vjs-loading-spinner {
+  border-color: rgba(59, 130, 246, 0.8);
+}
+
+.video-js .vjs-loading-spinner::before,
+.video-js .vjs-loading-spinner::after {
+  border-top-color: #3b82f6;
+}
+
+/* 错误提示 */
+.video-js .vjs-error-display {
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.video-js .vjs-error-display::before {
+  content: '⚠';
+  font-size: 48px;
+  color: #ef4444;
+  display: block;
+  margin-bottom: 10px;
+}
+
+/* 响应式优化 */
+@media (max-width: 768px) {
+  .video-js .vjs-big-play-button {
+    width: 60px;
+    height: 60px;
+    font-size: 36px;
+    line-height: 54px;
+  }
+  
+  .video-js .vjs-time-control {
+    font-size: 11px;
+    padding: 0 4px;
+  }
+}
+
+/* 不隐藏原生进度条，让video.js控制栏保持完整 */
+.video-js.vjs-has-custom-timeline .vjs-control-bar {
+  display: flex;
+}

@@ -18,7 +18,7 @@ anaVIDEO 是一个基于多模态大语言模型的智能视频分析平台，�
 | 功能模块 | 描述 | 技术栈 |
 |:--------|:-----|:------|
 | **视频语义分析** | 基于关键帧提取与多模态LLM的深度语义理解 | Gemini API / Custom API |
-| **语音转字幕** | 本地化Whisper模型，支持中文语音识别 | FunASR / Whisper |
+| **语音转字幕** | 本地化语音识别模型，支持中文语音识别 | zh_recogn (FunASR) |
 | **跨平台下载** | 支持46+视频平台的解析与下载 | yt-dlp / bili23-core |
 | **智能推荐** | 基于视频上下文的语义检索与聊天推荐 | Vector Search / LLM |
 | **混合存储** | 在线/离线自适应存储，支持数据迁移 | SQLite / IndexedDB |
@@ -54,8 +54,8 @@ anaVIDEO 是一个基于多模态大语言模型的智能视频分析平台，�
 │  └────────────────────────────────────────────────────────┘ │
 │  ┌────────────────────────────────────────────────────────┐ │
 │  │  Python Flask (Port 9527)                              │ │
-│  │  - 本地语音识别服务 (FunASR)                            │ │
-│  │  - Paraformer-zh 中文语音模型                           │ │
+│  │  - 本地语音识别服务 (zh_recogn)                            │ │
+│  │  - FunASR Paraformer-zh 中文语音模型                           │ │
 │  └────────────────────────────────────────────────────────┘ │
 └────────────────────────┬────────────────────────────────────┘
                          │
@@ -63,7 +63,7 @@ anaVIDEO 是一个基于多模态大语言模型的智能视频分析平台，�
 │                    外部服务层 (External)                      │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐     │
 │  │ Gemini API   │  │ Custom LLM   │  │ FFmpeg       │     │
-│  │ 1.5 Pro/2.0  │  │ (OpenAI)     │  │ 视频处理     │     │
+│  │ 2.5 Flash/Pro  │  │ (OpenAI)     │  │ 视频处理     │     │
 │  └──────────────┘  └──────────────┘  └──────────────┘     │
 └─────────────────────────────────────────────────────────────┘
 ```
@@ -73,7 +73,7 @@ anaVIDEO 是一个基于多模态大语言模型的智能视频分析平台，�
 ```
 视频上传 → 文件哈希计算 → 秒传检测
     ↓ (不存在)
-FFmpeg 提取音频 → FunASR 转写字幕 → SSE 实时推送
+FFmpeg 提取音频 → zh_recogn 转写字幕 → SSE 实时推送
     ↓
 关键帧提取 (24帧) → 感知哈希去重 → 保留约14-16关键帧
     ↓
@@ -96,7 +96,7 @@ FFmpeg 提取音频 → FunASR 转写字幕 → SSE 实时推送
 | Python | v3.8+ | v3.11 |
 | FFmpeg | v4.4+ | v6.0 |
 | RAM | 8GB | 16GB+ |
-| VRAM | - | 6GB+ (本地Whisper) |
+| VRAM | - | 4GB+ (本地语音识别) |
 
 ### § 依赖安装 (Dependencies)
 
@@ -133,7 +133,7 @@ npm install
 pip install -r bili_requirements.txt
 # fastapi, uvicorn, websockets, pydantic, httpx, beautifulsoup4
 
-# 语音识别服务 (可选)
+# 语音识别服务 (zh_recogn)
 cd zh_recogn
 pip install -r requirements.txt
 # funasr, flask, waitress
@@ -223,7 +223,7 @@ python bili_api_server.py
 # 支持的站点: B站、YouTube、Twitch、虎牙等46+平台
 ```
 
-#### ③ 语音识别服务（可选）
+#### ③ 语音识别服务 (zh_recogn)
 
 ```bash
 cd zh_recogn
@@ -310,12 +310,11 @@ function createPerceptualHash(
 
 #### 1.3 语音转文本（字幕生成）
 
-**支持的模型：**
+**使用的模型：**
 
 | 模型 | 类型 | 语言 | 精度 | 速度 |
 |:-----|:-----|:-----|:-----|:-----|
 | **FunASR Paraformer-zh** | 本地 | 中文 | 高 | 快 |
-| **Whisper (OpenAI)** | 云端 | 多语言 | 极高 | 中 |
 
 **处理流程：**
 
@@ -324,9 +323,9 @@ function createPerceptualHash(
     ↓
 FFmpeg 提取音频 → WAV 格式
     ↓
-POST /api/transcribe → FunASR 服务
+POST /api/transcribe → zh_recogn 服务
     ↓
-Paraformer-zh 推理 → VAD 分段
+FunASR Paraformer-zh 推理 → VAD 分段
     ↓
 返回结构化字幕 (SRT/VTT)
     ↓
@@ -421,9 +420,7 @@ const framesWithSubtitles = await Promise.all(
 
 | 提供商 | 模型 | 上下文长度 | 多模态 | 备注 |
 |:-------|:-----|:-----------|:-------|:-----|
-| **Google** | gemini-1.5-pro-002 | 2M tokens | ✓ | 推荐 |
-| **Google** | gemini-2.0-flash-exp | 1M tokens | ✓ | 快速 |
-| **自定义** | OpenAI 兼容 | 取决于模型 | ✓ | 需支持视觉 |
+| **Google** | gemini-2.5-pro | 1M tokens | ✓ | 推荐 |
 
 **Token 预算计算：**
 
@@ -964,3 +961,4 @@ copies of the Software...
 [⬆ 回到顶部](#anavideo---智能视频语义分析系统)
 
 </div>
+
